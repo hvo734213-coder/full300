@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Văn Hóa Mỹ - 300 Câu Hỏi Trắc Nghiệm Tương Tác</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between items-center py-4 px-3 sm:px-6">
+
+    <!-- Top Navigation / Header -->
+    <header class="max-w-6xl w-full bg-white shadow-sm rounded-2xl p-4 sm:p-5 mb-4 border border-slate-200">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-indigo-700 flex items-center gap-2">
+                    🇺🇸 Quiz Văn Hóa Mỹ (American Culture 300 MCQ)
+                </h1>
+                <p class="text-slate-500 text-xs sm:text-sm mt-0.5">Trọn bộ 300 câu hỏi (Units 1 - 7) • Tra từ điển trực tiếp & Chế độ ôn tập linh hoạt</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Grid Jump Modal Trigger -->
+                <button onclick="toggleGridModal()" class="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs sm:text-sm transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                    Bảng 300 câu
+                </button>
+
+                <!-- Dictionary Sidebar Trigger -->
+                <button onclick="toggleDictSidebar()" class="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-semibold px-3 py-2 rounded-xl text-xs sm:text-sm transition">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    📖 Tra từ điển
+                </button>
+
+                <!-- Realtime Score Badge -->
+                <div class="bg-indigo-50 text-indigo-700 font-bold px-3 py-2 rounded-xl text-xs sm:text-sm border border-indigo-100">
+                    Đúng: <span id="score-counter">0</span> / <span id="total-active-questions">300</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode Selectors Bar -->
+        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+            <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 max-w-full">
+                <span class="font-bold text-slate-500 mr-1 shrink-0">Chương:</span>
+                <button onclick="setFilterMode('all')" id="btn-mode-all" class="px-2.5 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow-sm transition shrink-0">Tất cả (300)</button>
+                <button onclick="setFilterMode('unit1')" id="btn-mode-unit1" class="px-2.5 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition shrink-0">Unit 1</button>
+                <button onclick="setFilterMode('unit2')" id="btn-mode-unit2" class="px-2.5 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition shrink-0">Unit 2</button>
+                <button onclick="setFilterMode('unit3')" id="btn-mode-unit3" class="px-2.5 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition shrink-0">Unit 3</button>
+                <button onclick="setFilterMode('unit4')" id="btn-mode-unit4" class="px-2.5 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition shrink-0">Unit 4</button>
+                <button onclick="setFilterMode('unit5')" id="btn-mode-unit5" class="px-2.5 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition shrink-0">Unit 5</button>
+                <button onclick="setFilterMode('unit6')" id="btn-mode-unit6" class="px-2.5 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition shrink-0">Unit 6</button>
+                <button onclick="setFilterMode('unit7')" id="btn-mode-unit7" class="px-2.5 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition shrink-0">Unit 7</button>
+            </div>
+            
+            <div class="flex items-center gap-2 shrink-0">
+                <label class="flex items-center gap-1.5 cursor-pointer bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-slate-700 font-medium">
+                    <input type="checkbox" id="toggle-shuffle" onchange="toggleShuffle()" class="rounded text-indigo-600 focus:ring-indigo-500">
+                    <span>🔀 Ngẫu nhiên (Shuffle)</span>
+                </label>
+                <button onclick="resetCurrentQuiz()" class="text-slate-400 hover:text-slate-600 px-2 py-1 underline font-medium">Làm lại</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Wrapper -->
+    <div class="max-w-6xl w-full flex-1 flex flex-col lg:flex-row gap-5">
+
+        <!-- Quiz Container -->
+        <main class="flex-1 bg-white shadow-md rounded-2xl p-4 sm:p-7 border border-slate-200 flex flex-col justify-between">
+            
+            <!-- Active Quiz View -->
+            <div id="quiz-view">
+                <div class="flex justify-between items-center mb-3">
+                    <span id="unit-badge" class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md bg-indigo-50 text-indigo-700">Unit 1</span>
+                    <span id="progress-text" class="text-xs sm:text-sm font-bold text-slate-400">Câu 1 / 300</span>
+                </div>
+
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-6">
+                    <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 0.3%"></div>
+                </div>
+
+                <div class="mb-6">
+                    <h2 id="question-text" class="text-base sm:text-xl font-bold text-slate-800 leading-snug">
+                        <!-- Loaded dynamically -->
+                    </h2>
+                </div>
+
+                <div id="options-container" class="space-y-3">
+                    <!-- Loaded dynamically -->
+                </div>
+
+                <div id="feedback-container" class="hidden mt-6 p-4 sm:p-5 rounded-xl border transition-all animate-fade-in">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Quiz Result View -->
+            <div id="result-view" class="hidden text-center py-8">
+                <div class="inline-flex p-4 rounded-full bg-indigo-50 text-indigo-600 mb-4">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-2">Chúc mừng bạn đã hoàn thành!</h2>
+                <p class="text-slate-600 text-sm sm:text-base mb-6">Bạn đã hoàn tất bài luyện tập trắc nghiệm Văn hóa Mỹ.</p>
+                
+                <div class="max-w-md mx-auto bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-6">
+                    <div class="text-sm text-slate-500 mb-1">Kết quả luyện tập</div>
+                    <div class="text-4xl font-black text-indigo-600 mb-2" id="final-score">0 / 0</div>
+                    <div class="text-xs text-slate-400" id="final-percentage">0% chính xác</div>
+                </div>
+
+                <button onclick="resetCurrentQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition">
+                    Làm lại bài luyện tập này
+                </button>
+            </div>
+
+            <!-- Bottom Navigation Bar -->
+            <div id="nav-controls" class="flex justify-between items-center mt-8 pt-5 border-t border-slate-100">
+                <button id="prev-btn" onclick="prevQuestion()" class="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    ← Câu trước
+                </button>
+                
+                <button id="next-btn" onclick="nextQuestion()" class="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm">
+                    Câu tiếp →
+                </button>
+            </div>
+        </main>
+
+        <!-- Dictionary & Web Search Sidebar -->
+        <aside id="dict-sidebar" class="w-full lg:w-80 bg-white shadow-md rounded-2xl p-5 border border-slate-200 flex flex-col h-[520px] lg:h-auto hidden lg:flex">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm sm:text-base">
+                    <span>📖</span> Tra từ điển trực tiếp
+                </h3>
+                <button onclick="toggleDictSidebar()" class="lg:hidden text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            </div>
+
+            <!-- Search Bar -->
+            <form onsubmit="searchWord(event)" class="flex gap-2 mb-3">
+                <input type="text" id="dict-input" placeholder="Nhập từ tiếng Anh hoặc bôi đen từ..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-2 rounded-xl text-xs transition shrink-0">Tra từ</button>
+            </form>
+
+            <!-- Quick External Search Links -->
+            <div class="flex items-center justify-between gap-1 mb-4 text-[11px] font-semibold text-slate-500 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                <span>Mở web tra cứu:</span>
+                <button onclick="openExternalSearch('google')" class="hover:text-indigo-600 underline">Google</button>
+                <span>•</span>
+                <button onclick="openExternalSearch('cambridge')" class="hover:text-indigo-600 underline">Cambridge</button>
+                <span>•</span>
+                <button onclick="openExternalSearch('merriam')" class="hover:text-indigo-600 underline">Merriam</button>
+            </div>
+
+            <!-- Dictionary Results Content -->
+            <div id="dict-result" class="flex-1 overflow-y-auto custom-scrollbar pr-1 text-xs sm:text-sm text-slate-600">
+                <div class="text-center text-slate-400 py-10">
+                    Gõ từ tiếng Anh ở trên hoặc bôi đen/nhấp đúp vào từ bất kỳ trong câu hỏi để tra cứu tự động.
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Question Jump Modal -->
+    <div id="grid-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-5 sm:p-6 shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-800">Bảng câu hỏi trắc nghiệm (300 câu)</h3>
+                <button onclick="toggleGridModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+            </div>
+            
+            <div class="flex items-center gap-2 mb-4">
+                <input type="text" id="search-input" onkeyup="filterQuestions()" placeholder="Tìm theo số câu hoặc từ khóa câu hỏi..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div id="grid-container" class="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-12 gap-2 overflow-y-auto custom-scrollbar p-1 flex-1">
+                <!-- Dynamic Grid Buttons -->
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span> Đúng</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-amber-400 rounded-full"></span> Sai</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-slate-200 rounded-full"></span> Chưa làm</span>
+                </div>
+                <button onclick="toggleGridModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg font-semibold">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Data Script -->
+    <script>
+        // Data parsed directly from American Culture 300 MCQ file
+        const rawData = [
+            // UNIT 1
+            { id: 1, unit: 1, q: "What do national symbols help express in American culture?", options: ["Shared values and national identity", "Only economic statistics", "Private family decisions", "Regional weather patterns"], correct: 0 },
+            { id: 2, unit: 1, q: "How many stripes are on the current American flag?", options: ["Fifty", "Thirteen", "Fifteen", "Ten"], correct: 1 },
+            { id: 3, unit: 1, q: "What do the thirteen stripes on the U.S. flag represent?", options: ["The first thirteen presidents", "Thirteen constitutional amendments", "The original thirteen colonies", "Thirteen national parks"], correct: 2 },
+            { id: 4, unit: 1, q: "What do the fifty stars on the U.S. flag represent?", options: ["Fifty original colonies", "Fifty presidents", "The fifty largest cities", "The fifty states"], correct: 3 },
+            { id: 5, unit: 1, q: "Which ideals are associated with American national symbols?", options: ["Isolation, censorship, and uniformity", "Monarchy, conquest, and hereditary rule", "Military rule and religious authority", "Liberty, democracy, equality, and self-government"], correct: 3 },
+            { id: 6, unit: 1, q: "Where is the Statue of Liberty located?", options: ["The National Mall in Washington, D.C.", "Plymouth, Massachusetts", "Philadelphia Harbor", "Liberty Island in New York Harbor"], correct: 3 },
+            { id: 7, unit: 1, q: "Which country presented the Statue of Liberty to the United States?", options: ["Canada", "Spain", "France", "Britain"], correct: 2 },
+            { id: 8, unit: 1, q: "In what year was the Statue of Liberty dedicated?", options: ["1776", "1621", "1931", "1886"], correct: 3 },
+            { id: 9, unit: 1, q: "What did the Statue of Liberty represent to many immigrants?", options: ["Freedom, hope, and opportunity", "The authority of the monarchy", "A warning against migration", "The end of all economic inequality"], correct: 0 },
+            { id: 10, unit: 1, q: "The Liberty Bell is most closely associated with which historical theme?", options: ["The founding of the United Nations", "The Industrial Revolution", "Independence and self-government", "The Civil War's end only"], correct: 2 },
+            { id: 11, unit: 1, q: "Why is the Liberty Bell notable today?", options: ["It contains fifty stars", "It was presented by France", "It is rung every Independence Day", "Its famous crack and symbolic meaning"], correct: 3 },
+            { id: 12, unit: 1, q: "What is the bald eagle's role in the United States?", options: ["National anthem", "First constitutional amendment", "Official national holiday", "Official national emblem"], correct: 3 },
+            { id: 13, unit: 1, q: "In what year was the bald eagle adopted as the national emblem, according to the coursebook?", options: ["1863", "1782", "1931", "1886"], correct: 1 },
+            { id: 14, unit: 1, q: "What is the Pledge of Allegiance?", options: ["A holiday meal", "A public affirmation of loyalty to the nation", "A court judgment", "A treaty with France"], correct: 1 },
+            { id: 15, unit: 1, q: "Which song became the U.S. national anthem in 1931?", options: ["America the Beautiful", "The Star-Spangled Banner", "God Bless America", "Yankee Doodle"], correct: 1 },
+            { id: 16, unit: 1, q: "What is Thanksgiving primarily associated with in contemporary American culture?", options: ["The adoption of the Constitution", "Military victory and conquest", "The beginning of summer", "Gratitude, family, and community"], correct: 3 },
+            { id: 17, unit: 1, q: "On which day is Thanksgiving celebrated in the United States?", options: ["July 4", "The first Monday in September", "December 25", "The fourth Thursday of November"], correct: 3 },
+            { id: 18, unit: 1, q: "Which president proclaimed Thanksgiving a national holiday in 1863?", options: ["George Washington", "Abraham Lincoln", "Thomas Jefferson", "John F. Kennedy"], correct: 1 },
+            { id: 19, unit: 1, q: "The First Thanksgiving is commonly associated with which year?", options: ["1787", "1492", "1776", "1621"], correct: 3 },
+            { id: 20, unit: 1, q: "Which Native American people are mentioned in the coursebook's account of the 1621 harvest feast?", options: ["The Cherokee only", "The Wampanoag", "The Navajo", "The Apache"], correct: 1 },
+            { id: 21, unit: 1, q: "How did Native Americans help the Pilgrims?", options: ["They taught them to grow crops, fish, and adapt locally", "They built the Statue of Liberty", "They led the Continental Congress", "They drafted the Constitution"], correct: 0 },
+            { id: 22, unit: 1, q: "What ship carried the Pilgrims to North America in 1620?", options: ["The Constitution", "The Mayflower", "The Liberty", "The Santa Maria"], correct: 1 },
+            { id: 23, unit: 1, q: "What was the Mayflower Compact intended to establish?", options: ["Principles of self-government and majority rule", "The Bill of Rights", "A national anthem", "A system of hereditary monarchy"], correct: 0 },
+            { id: 24, unit: 1, q: "What does Independence Day commemorate?", options: ["The adoption of the Declaration of Independence", "The ratification of the Constitution", "The end of the Civil War", "The arrival of the Mayflower"], correct: 0 },
+            { id: 25, unit: 1, q: "On what date is American Independence Day celebrated?", options: ["November Thanksgiving", "June 14", "July 4", "September 17"], correct: 2 },
+            { id: 26, unit: 1, q: "Who drafted the Declaration of Independence?", options: ["Abraham Lincoln", "Benjamin Franklin alone", "George Washington", "Thomas Jefferson"], correct: 3 },
+            { id: 27, unit: 1, q: "In what year was the Declaration of Independence adopted?", options: ["1787", "1886", "1863", "1776"], correct: 3 },
+            { id: 28, unit: 1, q: "Which rights are named in the Declaration of Independence as described in the coursebook?", options: ["Housing, travel, and employment", "Speech, privacy, and trial by jury only", "Life, liberty, and the pursuit of happiness", "Education, healthcare, and retirement"], correct: 2 },
+            { id: 29, unit: 1, q: "Which activities commonly mark Independence Day?", options: ["Only religious services", "Presidential elections every year", "Harvest feasts in November", "Fireworks, parades, concerts, and speeches"], correct: 3 },
+            { id: 30, unit: 1, q: "What does 'patriotism' mean in the coursebook vocabulary?", options: ["Love for and loyalty to one's country", "Movement between countries", "Unfair treatment", "The legal membership of a nation"], correct: 0 },
+            { id: 31, unit: 1, q: "What is 'gratitude'?", options: ["Freedom from foreign control", "The feeling of being thankful", "A national symbol", "A system of government"], correct: 1 },
+            { id: 32, unit: 1, q: "What is an anthem?", options: ["An official song representing a nation or group", "A written constitution", "A monument with a crack", "A formal election"], correct: 0 },
+            { id: 33, unit: 1, q: "What is public memory?", options: ["A society's shared understanding of its past", "A person's private diary", "A list of current laws only", "A record of weather patterns"], correct: 0 },
+            { id: 34, unit: 1, q: "Why can national symbols become controversial?", options: ["Groups may disagree about what they represent", "They have no connection to history", "They are used only by tourists", "They never change in meaning"], correct: 0 },
+            { id: 35, unit: 1, q: "What is the main cultural function of national holidays?", options: ["They determine state borders", "They replace all historical education", "They preserve memory and communicate shared values", "They eliminate cultural differences"], correct: 2 },
+            { id: 36, unit: 1, q: "What does the coursebook say about the traditional Thanksgiving story?", options: ["It was created by the Supreme Court", "It began in 1776", "It has no connection to Native peoples", "Its history is more complex than the familiar school narrative"], correct: 3 },
+            { id: 37, unit: 1, q: "Which foods are listed as traditional Thanksgiving dishes?", options: ["Sushi, noodles, and dumplings", "Tacos, paella, and olives", "Turkey, stuffing, cranberry sauce, sweet potatoes, and pumpkin pie", "Fish and chips only"], correct: 2 },
+            { id: 38, unit: 1, q: "What does 'commemoration' mean?", options: ["Publicly remembering an important person or event", "Adopting another culture", "Electing representatives", "Moving to a new country"], correct: 0 },
+            { id: 39, unit: 1, q: "Which holiday is often called 'America's Birthday'?", options: ["Thanksgiving", "Memorial Day", "July 4 / Independence Day", "Labor Day"], correct: 2 },
+            { id: 40, unit: 1, q: "What is the central message of the Mayflower Compact in American political culture?", options: ["Government should be inherited by one family", "Citizens should avoid public participation", "Government should derive authority from the consent of the governed", "States should have no local authority"], correct: 2 },
+            { id: 41, unit: 1, q: "What can studying symbols and holidays help students understand?", options: ["National identity, cultural values, and public memory", "Only modern technology", "Only American geography", "Only the national economy"], correct: 0 },
+
+            // UNIT 2
+            { id: 42, unit: 2, q: "Why is the United States often described as a 'nation of immigrants'?", options: ["It has no Indigenous history", "Migration has strongly shaped its population and culture", "All residents arrived in one year", "Immigration ended in the eighteenth century"], correct: 1 },
+            { id: 43, unit: 2, q: "Who lived throughout North America long before European settlers arrived?", options: ["Only French traders", "Native American peoples", "Only English settlers", "No permanent communities"], correct: 1 },
+            { id: 44, unit: 2, q: "How did the experience of enslaved Africans differ from voluntary immigration?", options: ["They were forcibly transported and denied freedom", "They were automatically granted citizenship", "They all chose to migrate for education", "They arrived only after 1965"], correct: 0 },
+            { id: 45, unit: 2, q: "Which group came to the United States in large numbers during the nineteenth century after famine?", options: ["Australian miners", "French royal families", "Irish immigrants", "Japanese tourists"], correct: 2 },
+            { id: 46, unit: 2, q: "Chinese laborers are noted in the coursebook for helping build what?", options: ["The Statue of Liberty", "The White House", "The first state capitol", "Railroads in the American West"], correct: 3 },
+            { id: 47, unit: 2, q: "Which law significantly shifted U.S. immigration patterns in 1965?", options: ["The Bill of Rights", "The Immigration and Nationality Act", "The Mayflower Compact", "The Homestead Act"], correct: 1 },
+            { id: 48, unit: 2, q: "What does 'migration' mean?", options: ["A constitutional court", "A national song", "A form of taxation", "Movement of people from one place to another"], correct: 3 },
+            { id: 49, unit: 2, q: "What is an immigrant?", options: ["A person visiting briefly as a tourist", "A person who writes laws", "A person who moves to another country to live", "A person born only in the capital"], correct: 2 },
+            { id: 50, unit: 2, q: "What does assimilation generally involve?", options: ["Maintaining every practice without any interaction", "Electing a president", "Adopting aspects of another or dominant culture", "Dividing a country into states"], correct: 2 },
+            { id: 51, unit: 2, q: "What is multiculturalism?", options: ["The coexistence of multiple cultures", "The elimination of cultural differences", "A form of geographic isolation", "A system with one political party"], correct: 0 },
+            { id: 52, unit: 2, q: "What does cultural diversity refer to?", options: ["Variety among people, cultures, or backgrounds", "A uniform language policy", "A lack of cultural traditions", "A single shared ancestry"], correct: 0 },
+            { id: 53, unit: 2, q: "What is citizenship?", options: ["A person's favorite cultural tradition", "An informal social club", "Legal membership in a nation", "The movement of people across regions"], correct: 2 },
+            { id: 54, unit: 2, q: "What does ethnicity refer to?", options: ["A type of government", "A shared cultural or ancestral background", "A person's job title", "A national holiday"], correct: 1 },
+            { id: 55, unit: 2, q: "What is discrimination?", options: ["The preservation of heritage", "The legal process of voting", "The celebration of diversity", "Unfair treatment based on group membership"], correct: 3 },
+            { id: 56, unit: 2, q: "What does the melting pot model suggest?", options: ["Different groups blend into a common culture", "Only one immigrant group may participate", "Groups remain entirely separate from society", "Culture is determined only by geography"], correct: 0 },
+            { id: 57, unit: 2, q: "What is a common criticism of the melting pot model?", options: ["It requires people to speak many languages", "It rejects all common values", "It prevents any shared identity", "It may pressure minorities to abandon their cultures"], correct: 3 },
+            { id: 58, unit: 2, q: "What does the salad bowl model emphasize?", options: ["Groups can preserve distinct cultures while sharing society", "Immigrants cannot participate in public life", "Only food traditions matter", "All cultural identities must disappear"], correct: 0 },
+            { id: 59, unit: 2, q: "How does the salad bowl metaphor describe cultural groups?", options: ["Like branches of government", "Like isolated countries at war", "Like distinct ingredients contributing to one dish", "Like identical pieces of metal"], correct: 2 },
+            { id: 60, unit: 2, q: "What does it mean to say identity can be hybrid?", options: ["A person must have only one cultural influence", "Identity is determined only by citizenship", "Identity never changes", "A person can identify with multiple cultures at once"], correct: 3 },
+            { id: 61, unit: 2, q: "Which person is described as the 'Father of His Country'?", options: ["Thomas Jefferson", "John F. Kennedy", "Cesar Chavez", "George Washington"], correct: 3 },
+            { id: 62, unit: 2, q: "Who drafted the Declaration of Independence?", options: ["Thomas Jefferson", "Susan B. Anthony", "Clara Barton", "Henry Ford"], correct: 0 },
+            { id: 63, unit: 2, q: "Which president issued the Emancipation Proclamation during the Civil War?", options: ["George Washington", "Thomas Edison", "Abraham Lincoln", "John F. Kennedy"], correct: 2 },
+            { id: 64, unit: 2, q: "Who fought for women's suffrage and equal rights?", options: ["Cesar Chavez", "Clara Barton", "Susan B. Anthony", "Henry Ford"], correct: 2 },
+            { id: 65, unit: 2, q: "Who founded the American Red Cross, according to the coursebook?", options: ["Susan B. Anthony", "Betsy Ross", "Ethel Tiersky", "Clara Barton"], correct: 3 },
+            { id: 66, unit: 2, q: "Who advocated for agricultural workers and immigrant communities?", options: ["Thomas Edison", "Benjamin Franklin", "Cesar Chavez", "John F. Kennedy"], correct: 2 },
+            { id: 67, unit: 2, q: "Who transformed modern life through technological innovation?", options: ["George Washington", "Cesar Chavez", "Abraham Lincoln", "Thomas Edison"], correct: 3 },
+            { id: 68, unit: 2, q: "Who revolutionized manufacturing and transportation?", options: ["Clara Barton", "Henry Ford", "Susan B. Anthony", "Thomas Jefferson"], correct: 1 },
+            { id: 69, unit: 2, q: "What is the American Dream commonly understood to mean?", options: ["Only inherited wealth matters", "People can improve their lives through effort and determination", "Success is guaranteed regardless of circumstances", "People should avoid education"], correct: 1 },
+            { id: 70, unit: 2, q: "What is one criticism of the American Dream discussed in the coursebook?", options: ["Inequality can limit access to opportunity and upward mobility", "It has never influenced immigrants", "It rejects personal effort", "It is a national holiday"], correct: 0 },
+            { id: 71, unit: 2, q: "What does 'upward mobility' mean?", options: ["Changing national anthems", "Losing citizenship", "Moving to a different climate", "Moving to a higher social or economic position"], correct: 3 },
+            { id: 72, unit: 2, q: "Which statement about the U.S. federal level and language is given in the coursebook?", options: ["Every state must use the same two languages", "English is named as the only official federal language in the text", "Spanish is the sole national language", "The United States has no official national language at the federal level"], correct: 3 },
+            { id: 73, unit: 2, q: "What is one way immigration has influenced American life?", options: ["Only the national flag's number of stars", "Food, music, language, religion, literature, and politics", "It has had no cultural impact", "Only the country's mountain ranges"], correct: 1 },
+            { id: 74, unit: 2, q: "Why is the phrase 'a nation of immigrants' sometimes considered incomplete?", options: ["It can overlook Indigenous peoples and the forced migration of enslaved Africans", "It refers only to the twenty-first century", "It means all migration was voluntary", "It describes only one state"], correct: 0 },
+            { id: 75, unit: 2, q: "What is integration in the coursebook's vocabulary exercise?", options: ["Participating in society while maintaining cultural identity", "Refusing all social participation", "Replacing all laws with customs", "Moving from one state to another"], correct: 0 },
+            { id: 76, unit: 2, q: "Which city is noted as highly linguistically diverse?", options: ["Salt Lake City only", "New York City", "Philadelphia only", "Plymouth only"], correct: 1 },
+            { id: 77, unit: 2, q: "What does the coursebook say about Native American societies?", options: ["They had no trade networks", "They had diverse languages, cultures, political structures, and economies", "They all shared one language and government", "They developed only after European arrival"], correct: 1 },
+            { id: 78, unit: 2, q: "Which group is named among Native American peoples in the coursebook?", options: ["Normans", "Vikings", "Saxons", "Cherokee"], correct: 3 },
+            { id: 79, unit: 2, q: "What is one reason people migrate, according to the unit's overview?", options: ["To seek work, freedom, safety, land, or opportunity", "To avoid all cultural contact", "To eliminate their identity", "To end all political participation"], correct: 0 },
+            { id: 80, unit: 2, q: "How does the salad bowl model relate to national identity?", options: ["It treats identity as fixed and uniform", "It rejects all common institutions", "It allows shared society alongside distinct cultural traditions", "It requires everyone to share the same ancestry"], correct: 2 },
+            { id: 81, unit: 2, q: "Which historical event is listed for 1882 in the unit timeline?", options: ["The Declaration of Independence", "The Mayflower Compact", "The Immigration and Nationality Act", "The Chinese Exclusion Act"], correct: 3 },
+            { id: 82, unit: 2, q: "What does the coursebook suggest about American identity today?", options: ["It depends only on birthplace", "It is fixed and identical for everyone", "It is unrelated to immigration", "It is dynamic, evolving, and continuously negotiated"], correct: 3 },
+
+            // UNIT 3
+            { id: 83, unit: 3, q: "How has geography influenced American culture?", options: ["It has shaped settlement, economic development, and ways of life", "It has had no effect on history", "It eliminated regional differences", "It determines every person's beliefs completely"], correct: 0 },
+            { id: 84, unit: 3, q: "What is geography?", options: ["The physical features and characteristics of a place", "A legal membership status", "A national anthem", "A political party"], correct: 0 },
+            { id: 85, unit: 3, q: "What is a region?", options: ["A single person's identity", "A national election", "An area with shared geographical or cultural characteristics", "A constitutional amendment"], correct: 2 },
+            { id: 86, unit: 3, q: "What is a landscape?", options: ["The visible natural and human-made features of an area", "A type of citizenship", "A national holiday", "A list of federal judges"], correct: 0 },
+            { id: 87, unit: 3, q: "What does 'frontier' mean in the unit vocabulary?", options: ["A national border treaty", "The center of a large city", "The edge of settled territory, especially during expansion", "A form of local election"], correct: 2 },
+            { id: 88, unit: 3, q: "What is a landmark?", options: ["A well-known natural or human-made feature", "A person who moves countries", "A type of national holiday", "A branch of government"], correct: 0 },
+            { id: 89, unit: 3, q: "What is a metropolis?", options: ["A large and important city", "A small uninhabited island", "A mountain pass only", "A rural farm"], correct: 0 },
+            { id: 90, unit: 3, q: "What does urbanization mean?", options: ["The growth and expansion of cities", "The creation of a national anthem", "The disappearance of all cities", "The movement from cities to farms only"], correct: 0 },
+            { id: 91, unit: 3, q: "Which four broad U.S. regions are discussed in the coursebook?", options: ["East, Central, Islands, and Desert", "Northeast, South, Midwest, and West", "Colonies, Territories, Oceans, and Lakes", "North, Arctic, Atlantic, and Pacific"], correct: 1 },
+            { id: 92, unit: 3, q: "Which region is specifically discussed as a separate section in Unit 3?", options: ["The Northeast", "The Amazon Basin", "The Sahara", "The Alps"], correct: 0 },
+            { id: 93, unit: 3, q: "Why can regional identities differ within one country?", options: ["National borders prevent cultural change", "Regional identity is always illegal", "All regions have identical climates", "Regions develop distinct traditions, economies, and ways of life"], correct: 3 },
+            { id: 94, unit: 3, q: "What role do major cities play in American culture?", options: ["They prevent migration", "They can become symbols of broader cultural ideas", "They have no symbolic significance", "They replace the federal Constitution"], correct: 1 },
+            { id: 95, unit: 3, q: "What relationship does Unit 3 explore?", options: ["The relationship between place, culture, and identity", "The relationship between courts and amendments only", "The relationship between elections and party slogans only", "The relationship between holidays and national anthems only"], correct: 0 },
+            { id: 96, unit: 3, q: "Which physical feature can influence settlement patterns?", options: ["The number of constitutional amendments only", "The dates of federal elections only", "Landscape and natural geography", "The wording of the national anthem only"], correct: 2 },
+            { id: 97, unit: 3, q: "How might geography affect economic development?", options: ["Different resources and locations support different activities", "It makes every region economically identical", "It prevents transportation networks", "It determines all laws directly"], correct: 0 },
+            { id: 98, unit: 3, q: "What is a cultural region?", options: ["An area associated with shared cultural characteristics", "A country with one ruler", "An area with no human population", "A judicial district only"], correct: 0 },
+            { id: 99, unit: 3, q: "What does the term 'regional identity' refer to?", options: ["Legal citizenship in another country", "The right to judicial review", "A national anthem's lyrics", "A sense of belonging connected to a particular region"], correct: 3 },
+            { id: 100, unit: 3, q: "Why are cities often studied as cultural symbols?", options: ["They have no landmarks", "They are unrelated to migration", "They are always culturally identical", "They represent histories, economies, and social meanings"], correct: 3 },
+            { id: 101, unit: 3, q: "What is the main point of studying U.S. regions?", options: ["To understand cultural variation within the United States", "To prove every American shares the same lifestyle", "To memorize only state capitals", "To study only constitutional law"], correct: 0 },
+            { id: 102, unit: 3, q: "Which is an example of a human-made landscape feature?", options: ["A natural river", "A coastline", "A mountain range formed naturally", "A city skyline"], correct: 3 },
+            { id: 103, unit: 3, q: "Which is an example of a natural landscape feature?", options: ["A skyscraper", "A stadium", "A mountain range", "A highway interchange"], correct: 2 },
+            { id: 104, unit: 3, q: "How can regional traditions develop?", options: ["Without any connection to place", "Only through presidential speeches", "Through history, environment, settlement, and local economies", "Only through federal court decisions"], correct: 2 },
+            { id: 105, unit: 3, q: "What does the coursebook say about the size of the United States?", options: ["Its size and varied landscapes influence culture and identity", "Its geography is unrelated to settlement", "It is too small to have regional differences", "It has no varied landscapes"], correct: 0 },
+            { id: 106, unit: 3, q: "Which factor can help explain different ways of life across regions?", options: ["Climate and physical environment", "A shared national anthem alone", "The same national flag used everywhere", "The existence of one Constitution"], correct: 0 },
+            { id: 107, unit: 3, q: "What is the cultural meaning of place?", options: ["A national election procedure", "The exact latitude of every town", "A list of legal rights", "The meanings and identities people associate with locations"], correct: 3 },
+            { id: 108, unit: 3, q: "Which region is often associated in the unit structure with the nation's capital-city and early urban history?", options: ["The Northeast", "The Pacific Islands", "The Arctic Circle", "The Sahara"], correct: 0 },
+            { id: 109, unit: 3, q: "What can landmarks contribute to a community?", options: ["The abolition of regional traditions", "A shared reference point for local or national identity", "A replacement for all public institutions", "A guarantee of economic equality"], correct: 1 },
+            { id: 110, unit: 3, q: "Why is the United States culturally diverse across regions?", options: ["It has no internal migration", "Its history, landscapes, settlement, and economies vary", "Regional borders are permanent cultural barriers", "All areas were settled at the same time by one group"], correct: 1 },
+            { id: 111, unit: 3, q: "How should regional differences be understood?", options: ["As irrelevant to American culture", "As proof that no national culture exists", "As varied patterns rather than absolute rules about every resident", "As identical in every state"], correct: 2 },
+            { id: 112, unit: 3, q: "Which topic belongs most directly to Unit 3?", options: ["Thanksgiving's first harvest feast", "How geography shapes regional identity", "The Electoral College vote count", "The details of the Bill of Rights"], correct: 1 },
+            { id: 113, unit: 3, q: "What does settlement mean in a geographical-historical context?", options: ["A court's constitutional opinion", "The singing of an anthem", "The establishment of communities in a place", "The process of ratifying amendments"], correct: 2 },
+            { id: 114, unit: 3, q: "What is one reason transport links matter to regional development?", options: ["They eliminate all cultural differences", "They connect communities and economic activities", "They make geography irrelevant", "They decide constitutional rights"], correct: 1 },
+            { id: 115, unit: 3, q: "How can a city's image influence culture?", options: ["It cannot influence national identity", "It may symbolize opportunity, innovation, history, or power", "It can only represent weather", "It always represents rural life"], correct: 1 },
+            { id: 116, unit: 3, q: "What is the difference between a natural and human-made feature?", options: ["Both must be built by governments", "Natural features form without being built by people; human-made features are constructed", "Natural features exist only in cities", "Human-made features include only rivers"], correct: 1 },
+            { id: 117, unit: 3, q: "Why does Unit 3 include regional identities?", options: ["To connect geographical areas with distinctive cultural experiences", "To argue that regions have no shared characteristics", "To explain how a bill becomes law", "To focus solely on individual biographies"], correct: 0 },
+            { id: 118, unit: 3, q: "Which question best reflects Unit 3's focus?", options: ["What does the First Amendment protect?", "Who drafted the Declaration of Independence?", "When is Thanksgiving celebrated?", "How does place shape culture and identity?"], correct: 3 },
+            { id: 119, unit: 3, q: "What is one way geography can influence cultural traditions?", options: ["It determines the national anthem", "Local environments and economic activities can shape daily practices", "It makes traditions impossible", "It removes all local history"], correct: 1 },
+            { id: 120, unit: 3, q: "Which term describes the growth of cities?", options: ["Assimilation", "Ratification", "Commemoration", "Urbanization"], correct: 3 },
+            { id: 121, unit: 3, q: "What is the frontier in U.S. history commonly connected with?", options: ["The national anthem", "The edge of settled territory and expansion", "Thanksgiving foods", "The Supreme Court's judicial review"], correct: 1 },
+            { id: 122, unit: 3, q: "Why should generalizations about regions be used carefully?", options: ["Every resident is identical", "Individuals within a region can have different experiences and identities", "Geography has no cultural impact", "Regions have no history"], correct: 1 },
+
+            // UNIT 4
+            { id: 123, unit: 4, q: "Who lived in North America before European colonization?", options: ["Only French monarchs", "Only English settlers", "No one", "Indigenous peoples"], correct: 3 },
+            { id: 124, unit: 4, q: "What was one major effect of European colonization?", options: ["It established the Constitution in 1492", "It ended all conflict", "It transformed Indigenous societies and settlement patterns", "It created the fifty-star flag immediately"], correct: 2 },
+            { id: 125, unit: 4, q: "Which event took place in 1776?", options: ["The Constitution was adopted", "The Civil War began", "The Declaration of Independence was adopted", "The Statue of Liberty was dedicated"], correct: 2 },
+            { id: 126, unit: 4, q: "What was a major cause of tensions between Britain and the American colonies?", options: ["The end of slavery", "The adoption of the Bill of Rights", "Taxation policies and lack of political representation", "The creation of the national anthem"], correct: 2 },
+            { id: 127, unit: 4, q: "Who drafted the Declaration of Independence?", options: ["Abraham Lincoln", "John F. Kennedy", "George Washington", "Thomas Jefferson"], correct: 3 },
+            { id: 128, unit: 4, q: "What was the American Revolution's central political outcome?", options: ["The creation of the United Nations", "Independence from Britain", "The abolition of all state governments", "The end of industrialization"], correct: 1 },
+            { id: 129, unit: 4, q: "What does Manifest Destiny refer to in the unit title and historical discussion?", options: ["A system of judicial review", "The belief used to justify westward expansion", "The national holiday of Thanksgiving", "A constitutional amendment on speech"], correct: 1 },
+            { id: 130, unit: 4, q: "What was one consequence of westward expansion?", options: ["The disappearance of all regional differences", "Territorial growth and conflict over land", "The end of immigration", "The adoption of the Star-Spangled Banner"], correct: 1 },
+            { id: 131, unit: 4, q: "Which conflict divided the United States over slavery and other issues?", options: ["The War of 1812 only", "The Civil War", "The American Revolution", "The Spanish-American War"], correct: 1 },
+            { id: 132, unit: 4, q: "Which president led the United States during the Civil War?", options: ["Thomas Jefferson", "Abraham Lincoln", "John F. Kennedy", "George Washington"], correct: 1 },
+            { id: 133, unit: 4, q: "What was the purpose of the Emancipation Proclamation?", options: ["To establish Thanksgiving", "To add stars to the flag", "To declare enslaved people in rebelling areas free", "To create the Electoral College"], correct: 2 },
+            { id: 134, unit: 4, q: "What broad change characterized industrialization?", options: ["The end of transportation networks", "A return to exclusively subsistence farming", "Growth of factories, manufacturing, and urban economies", "The disappearance of cities"], correct: 2 },
+            { id: 135, unit: 4, q: "How did railroads affect the United States?", options: ["They replaced state governments", "They created the Bill of Rights", "They connected regions and supported economic expansion", "They ended all migration"], correct: 2 },
+            { id: 136, unit: 4, q: "Which figure is associated with the development of the American republic as its first president?", options: ["Cesar Chavez", "Henry Ford", "Thomas Edison", "George Washington"], correct: 3 },
+            { id: 137, unit: 4, q: "What was the Mayflower Compact an early example of?", options: ["A declaration ending the Civil War", "A national banking system", "A modern immigration law", "Self-government and majority rule"], correct: 3 },
+            { id: 138, unit: 4, q: "In what year did the Mayflower arrive at Plymouth, according to the timeline?", options: ["1492", "1863", "1776", "1620"], correct: 3 },
+            { id: 139, unit: 4, q: "What happened in 1492 in the coursebook timeline?", options: ["The bald eagle was adopted", "Columbus reached the Americas", "Thanksgiving became a national holiday", "The Constitution was ratified"], correct: 1 },
+            { id: 140, unit: 4, q: "What happened in 1863 besides Lincoln's Civil War leadership?", options: ["The Declaration of Independence was drafted", "The first colonies were founded", "The Statue of Liberty was dedicated", "Thanksgiving was proclaimed a national holiday"], correct: 3 },
+            { id: 141, unit: 4, q: "Which development helped the United States become a global power?", options: ["The abandonment of all industry", "The end of federal government", "The cancellation of elections", "Industrial growth and expanding international influence"], correct: 3 },
+            { id: 142, unit: 4, q: "How did slavery contribute to early American economic development?", options: ["Enslaved Africans' labor contributed significantly to the economy", "It created the national anthem", "Enslaved people were all paid voluntary immigrants", "Slavery had no economic role"], correct: 0 },
+            { id: 143, unit: 4, q: "What was the significance of the American Revolution?", options: ["It ended the Civil War", "It established the Statue of Liberty in 1621", "It established an independent nation and influenced political ideals", "It created the 1965 immigration law"], correct: 2 },
+            { id: 144, unit: 4, q: "What does colonization mean in the context of U.S. history?", options: ["Establishing control and settlements in another territory", "A national holiday meal", "A system of direct democracy only", "The process of electing senators"], correct: 0 },
+            { id: 145, unit: 4, q: "What was one result of the Civil War era?", options: ["Slavery was challenged and ultimately abolished through constitutional change", "The U.S. became a monarchy", "The original thirteen colonies were re-created", "The Constitution was written for the first time in 1863"], correct: 0 },
+            { id: 146, unit: 4, q: "What is industrialization?", options: ["The growth of industry and machine-based production", "The division of government powers", "The public remembrance of an event", "The movement of people between countries"], correct: 0 },
+            { id: 147, unit: 4, q: "How can historical events shape national identity?", options: ["They affect only geography", "They influence shared memories, institutions, and values", "They remove the need for public debate", "They have no effect on later generations"], correct: 1 },
+            { id: 148, unit: 4, q: "What does the unit's historical sequence begin by emphasizing?", options: ["The latest presidential election", "Indigenous America and European colonization", "The 1965 immigration law", "The modern consumer economy"], correct: 1 },
+            { id: 149, unit: 4, q: "Which figure is linked to the Emancipation Proclamation?", options: ["Henry Ford", "Benjamin Franklin", "Abraham Lincoln", "Thomas Edison"], correct: 2 },
+            { id: 150, unit: 4, q: "What was a key issue in the American colonies' dispute with Britain?", options: ["The number of federal judges", "The national anthem's lyrics", "Political representation", "The modern two-party system"], correct: 2 },
+            { id: 151, unit: 4, q: "Which invention-related figure is noted for technological innovation?", options: ["George Washington", "Cesar Chavez", "Susan B. Anthony", "Thomas Edison"], correct: 3 },
+            { id: 152, unit: 4, q: "Which industrialist is associated with manufacturing and transportation?", options: ["Thomas Jefferson", "Clara Barton", "Henry Ford", "Abraham Lincoln"], correct: 2 },
+            { id: 153, unit: 4, q: "What does the coursebook's historical unit encourage students to examine?", options: ["Only dates without meaning", "Only popular entertainment", "Only present-day geography", "How events shaped institutions, values, and national identity"], correct: 3 },
+            { id: 154, unit: 4, q: "Why is Indigenous history important to understanding America?", options: ["It describes only the federal judiciary", "It began only after independence", "It shows that complex societies existed before European settlement", "It is unrelated to North American history"], correct: 2 },
+            { id: 155, unit: 4, q: "Which year marks the adoption of the Declaration of Independence?", options: ["1865", "1931", "1787", "1776"], correct: 3 },
+            { id: 156, unit: 4, q: "What is one effect of westward expansion on Indigenous communities?", options: ["The end of territorial growth", "Displacement and conflict over land", "Automatic citizenship for all", "The founding of the American Red Cross"], correct: 1 },
+            { id: 157, unit: 4, q: "What does 'global power' mean in Unit 4's context?", options: ["A country with significant influence in international affairs", "A country governed only by local councils", "A country with no foreign relations", "A country without industry"], correct: 0 },
+            { id: 158, unit: 4, q: "Which historical period is most closely associated with factories and rapid urban growth?", options: ["The First Thanksgiving", "The early national flag debate", "The Mayflower voyage", "Industrialization"], correct: 3 },
+            { id: 159, unit: 4, q: "Why is the Civil War a major turning point in U.S. history?", options: ["It created the first thirteen colonies", "It ended the American Revolution before independence", "It established the national anthem in 1931", "It tested national unity and was deeply connected to slavery"], correct: 3 },
+            { id: 160, unit: 4, q: "Which statement best summarizes the unit's scope?", options: ["Only daily consumer habits", "Only elections and political parties", "Only holidays and symbols", "From Indigenous America and colonization to modern global influence"], correct: 3 },
+            { id: 161, unit: 4, q: "What is a timeline useful for when studying history?", options: ["Measuring the size of cities", "Replacing evidence with opinion", "Explaining all events with one cause", "Showing the sequence of events over time"], correct: 3 },
+            { id: 162, unit: 4, q: "Why should historical narratives include multiple perspectives?", options: ["Only rulers matter in history", "Public memory never changes", "Every group has exactly the same experience", "Different groups experienced historical events differently"], correct: 3 },
+            { id: 163, unit: 4, q: "Which event is associated with the year 1787 in U.S. history?", options: ["The Statue of Liberty was dedicated", "The Mayflower landed", "Thanksgiving was proclaimed by Lincoln", "The Constitution was drafted/adopted by the Constitutional Convention"], correct: 3 },
+
+            // UNIT 5
+            { id: 164, unit: 5, q: "When was the U.S. Constitution adopted, according to the coursebook?", options: ["1863", "1787", "1886", "1776"], correct: 1 },
+            { id: 165, unit: 5, q: "What is the Constitution's main role?", options: ["To define regional climates", "To name every national holiday", "To establish the framework, structure, and powers of government", "To set the date of Thanksgiving"], correct: 2 },
+            { id: 166, unit: 5, q: "What is constitutionalism?", options: ["The absence of written laws", "A system with no courts", "The principle that government is limited by a constitution and the rule of law", "Government by hereditary monarchy"], correct: 2 },
+            { id: 167, unit: 5, q: "What is federalism?", options: ["All power belongs to one city", "Power is divided between national and state governments", "The president appoints all state governors", "Courts make every law"], correct: 1 },
+            { id: 168, unit: 5, q: "What is a republic?", options: ["A government controlled by one court", "A system in which citizens elect representatives to govern", "A country without elections", "A system ruled by a hereditary monarch"], correct: 1 },
+            { id: 169, unit: 5, q: "What is ratification?", options: ["Official approval of a law, treaty, or constitutional document", "A process of cultural assimilation", "The growth of cities", "Public remembrance of a holiday"], correct: 0 },
+            { id: 170, unit: 5, q: "What does separation of powers mean?", options: ["Government authority is divided among branches", "States have no powers", "All branches are controlled by one person", "Courts organize elections"], correct: 0 },
+            { id: 171, unit: 5, q: "What are checks and balances designed to do?", options: ["Remove constitutional rights", "End judicial review", "Allow one branch to act without limits", "Prevent any branch from becoming too powerful"], correct: 3 },
+            { id: 172, unit: 5, q: "What is limited government?", options: ["Government can do anything it wishes", "The president serves as the only lawmaker", "Only local customs matter", "Government power is restricted by law and constitutional rules"], correct: 3 },
+            { id: 173, unit: 5, q: "What is the Bill of Rights?", options: ["The first ten amendments to the U.S. Constitution", "The Declaration of Independence", "The first ten federal elections", "The Mayflower Compact"], correct: 0 },
+            { id: 174, unit: 5, q: "Which freedom is protected by the First Amendment?", options: ["A guarantee of employment", "The right to be president", "A right to avoid all taxes", "Freedom of speech"], correct: 3 },
+            { id: 175, unit: 5, q: "Which other freedoms are commonly associated with the First Amendment?", options: ["Citizenship and immigration", "Religion, press, assembly, and petition", "Military service and taxation", "Travel, housing, and healthcare"], correct: 1 },
+            { id: 176, unit: 5, q: "What is due process associated with?", options: ["Regional identity", "A holiday celebration", "The national anthem", "Legal fairness"], correct: 3 },
+            { id: 177, unit: 5, q: "What is equal protection closely associated with in the coursebook?", options: ["The First Amendment only", "The Declaration's adoption date", "The Fourteenth Amendment", "The Mayflower Compact"], correct: 2 },
+            { id: 178, unit: 5, q: "What does judicial review allow courts to do?", options: ["Appoint all members of Congress", "Conduct all elections", "Write every law directly", "Assess whether laws or government actions are constitutional"], correct: 3 },
+            { id: 179, unit: 5, q: "Why is the Constitution called a living document?", options: ["It has no amendments", "It changes automatically every year", "It is not used by courts", "Its principles are interpreted over time and it can be amended"], correct: 3 },
+            { id: 180, unit: 5, q: "What is an amendment?", options: ["A type of immigrant", "A regional landscape", "A national symbol", "A formal change or addition to the Constitution"], correct: 3 },
+            { id: 181, unit: 5, q: "What is the purpose of constitutional rights?", options: ["To eliminate all public responsibilities", "To prevent citizens from participating", "To replace all state laws with holidays", "To protect individual freedoms and limit government power"], correct: 3 },
+            { id: 182, unit: 5, q: "What is the rule of law?", options: ["Government and citizens are subject to the law", "Courts cannot interpret laws", "Leaders are above all laws", "Only ordinary citizens must obey laws"], correct: 0 },
+            { id: 183, unit: 5, q: "What problem did the Constitution seek to address after the Revolution?", options: ["Creating a stronger framework for national government while limiting power", "Replacing elections with hereditary rule", "Ending all state governments", "Making the U.S. a monarchy"], correct: 0 },
+            { id: 184, unit: 5, q: "Which principle divides authority between federal and state governments?", options: ["Assimilation", "Commemoration", "Urbanization", "Federalism"], correct: 3 },
+            { id: 185, unit: 5, q: "Which principle divides government into legislative, executive, and judicial branches?", options: ["Self-reliance", "Separation of powers", "Manifest Destiny", "Multiculturalism"], correct: 1 },
+            { id: 186, unit: 5, q: "What is the main purpose of checks and balances?", options: ["Congress cannot review executive action", "Each branch has identical duties", "The president controls every court decision", "Each branch can restrain the others in specified ways"], correct: 3 },
+            { id: 187, unit: 5, q: "Which branch interprets laws and the Constitution in court cases?", options: ["Judicial branch", "Local school boards", "Legislative branch", "Executive branch"], correct: 0 },
+            { id: 188, unit: 5, q: "Which branch is primarily responsible for making federal laws?", options: ["Judicial branch", "Legislative branch", "Executive branch", "The Electoral College"], correct: 1 },
+            { id: 189, unit: 5, q: "Which branch implements and enforces federal laws?", options: ["Political parties", "Judicial branch", "Legislative branch", "Executive branch"], correct: 3 },
+            { id: 190, unit: 5, q: "What does the First Amendment protect besides speech?", options: ["A guaranteed house", "The right to ignore court orders", "A guaranteed salary", "Freedom of religion and the press"], correct: 3 },
+            { id: 191, unit: 5, q: "Why do constitutional amendments matter?", options: ["They replace all elections", "They erase the entire Constitution each year", "They prohibit public debate", "They allow constitutional change in response to legal and social developments"], correct: 3 },
+            { id: 192, unit: 5, q: "What is the relationship between constitutional government and individual freedom?", options: ["Rights depend only on regional weather", "Constitutional government excludes courts", "Freedom requires unlimited government power", "Constitutional limits can protect rights against government overreach"], correct: 3 },
+            { id: 193, unit: 5, q: "What does 'republic' emphasize?", options: ["Direct rule by the military", "Rule by a hereditary king", "The absence of political participation", "Representation through elected officials"], correct: 3 },
+            { id: 194, unit: 5, q: "What is the main difference between a constitution and an ordinary policy?", options: ["There is no difference", "A constitution establishes fundamental governmental rules and powers", "A policy defines national symbols only", "A constitution is always a holiday schedule"], correct: 1 },
+            { id: 195, unit: 5, q: "What does the coursebook say about constitutional debate?", options: ["It continues to influence American society", "It ended permanently in 1787", "It is unrelated to rights", "It occurs only during wars"], correct: 0 },
+            { id: 196, unit: 5, q: "What is a constitutional government expected to respect?", options: ["Only local traditions", "Only the preferences of one official", "No legal procedures", "Limits established by constitutional rules"], correct: 3 },
+            { id: 197, unit: 5, q: "What does the concept of individual rights focus on?", options: ["The growth of cities", "The number of states", "The powers of a foreign country", "Freedoms and protections held by people"], correct: 3 },
+            { id: 198, unit: 5, q: "What does the Fourteenth Amendment address in the coursebook's review?", options: ["The Electoral College", "The national anthem", "The Mayflower voyage", "Equal protection"], correct: 3 },
+            { id: 199, unit: 5, q: "Why is judicial review important?", options: ["It helps ensure laws and actions comply with the Constitution", "It abolishes the legislative branch", "It allows courts to ignore the Constitution", "It gives courts the power to conduct all elections"], correct: 0 },
+            { id: 200, unit: 5, q: "What is one way the Constitution can change?", options: ["Through formal amendments", "By a city changing its name", "Through an annual national holiday", "By changing the flag's stripes"], correct: 0 },
+            { id: 201, unit: 5, q: "Which statement best describes limited government?", options: ["Government authority has no boundaries", "Public authority has constitutional boundaries", "Only judges can vote", "All rights are temporary customs"], correct: 1 },
+            { id: 202, unit: 5, q: "What does the coursebook identify as central principles of constitutional government?", options: ["Assimilation, mobility, and consumer culture", "Urbanization, frontier, and landscape", "Gratitude, anthem, and commemoration", "Federalism, separation of powers, and checks and balances"], correct: 3 },
+            { id: 203, unit: 5, q: "What is the central subject of Unit 5?", options: ["How American regions developed", "How Thanksgiving began", "How the Constitution structures government and protects rights", "How industrial factories expanded"], correct: 2 },
+            { id: 204, unit: 5, q: "What is the purpose of the Bill of Rights in American political culture?", options: ["To establish the national anthem", "To create the fifty states", "To set the date of Independence Day", "To enumerate important individual freedoms and protections"], correct: 3 },
+
+            // UNIT 6
+            { id: 205, unit: 6, q: "What are the three branches of the U.S. federal government?", options: ["Military, religious, and economic", "Democratic, Republican, and independent", "Legislative, executive, and judicial", "Federal, state, and city"], correct: 2 },
+            { id: 206, unit: 6, q: "What is Congress?", options: ["The president's cabinet", "The highest federal court", "The national legislature of the United States", "A national holiday committee"], correct: 2 },
+            { id: 207, unit: 6, q: "What are the two chambers of Congress?", options: ["The Electoral College and the courts", "The Senate and the House of Representatives", "The Supreme Court and the Cabinet", "The Presidency and the Senate"], correct: 1 },
+            { id: 208, unit: 6, q: "How many senators does each state have?", options: ["Two", "Ten", "One", "Three"], correct: 0 },
+            { id: 209, unit: 6, q: "What is the primary role of Congress?", options: ["To make federal laws", "To command every state court", "To conduct Thanksgiving celebrations", "To interpret all laws in court"], correct: 0 },
+            { id: 210, unit: 6, q: "What is the President's primary constitutional role in the executive branch?", options: ["Deciding every court case", "Representing each state equally in the Senate", "Leading the executive branch and implementing federal law", "Serving as the national legislature"], correct: 2 },
+            { id: 211, unit: 6, q: "What is the Supreme Court's key role?", options: ["Drafting every bill", "Selecting all candidates for political parties", "Interpreting the Constitution and federal law in cases", "Conducting the census alone"], correct: 2 },
+            { id: 212, unit: 6, q: "What does judicial review refer to in federal government?", options: ["Appointing all members of Congress", "Reviewing campaign posters for design", "Counting votes in every local election", "Reviewing whether laws or actions are constitutional"], correct: 3 },
+            { id: 213, unit: 6, q: "Which case is discussed as an important early judicial review case?", options: ["Roe v. Washington (1776)", "Lincoln v. Congress (1886)", "Marbury v. Madison (1803)", "Brown v. Board of Education (1863)"], correct: 2 },
+            { id: 214, unit: 6, q: "What is the basic purpose of elections in a democracy?", options: ["To eliminate citizen participation", "To allow citizens to choose representatives and leaders", "To appoint hereditary rulers", "To replace constitutional government"], correct: 1 },
+            { id: 215, unit: 6, q: "What is the Electoral College associated with?", options: ["The ratification of the Bill of Rights", "The election of every mayor", "The election of the U.S. President", "The appointment of Supreme Court justices by voters directly"], correct: 2 },
+            { id: 216, unit: 6, q: "What is a political party?", options: ["A court that interprets the Constitution", "A national holiday", "An organization that seeks to influence government and win elections", "A geographic region"], correct: 2 },
+            { id: 217, unit: 6, q: "What is political participation?", options: ["Only private family traditions", "The movement of people between regions", "A process of industrial production", "Activities through which citizens engage in public and political life"], correct: 3 },
+            { id: 218, unit: 6, q: "What is an interest group?", options: ["A group of state governors acting as a court", "A national anthem", "An organization seeking to influence public policy", "A branch of Congress"], correct: 2 },
+            { id: 219, unit: 6, q: "How can citizens participate beyond voting?", options: ["Only by serving as president", "Through advocacy, contacting officials, and civic activities", "Only by joining the Supreme Court", "By avoiding all public issues"], correct: 1 },
+            { id: 220, unit: 6, q: "What happens in the lawmaking process?", options: ["Political parties ratify the Constitution each year", "A bill becomes law automatically when written", "A bill is considered through legislative procedures before becoming law", "Courts write every bill"], correct: 2 },
+            { id: 221, unit: 6, q: "Which branch can veto legislation through the President?", options: ["The Electoral College", "Judicial branch", "Local government only", "Executive branch"], correct: 3 },
+            { id: 222, unit: 6, q: "What does the House of Representatives represent in the structure of Congress?", options: ["A chamber of the national legislature", "The federal judiciary", "A group of state courts", "The president's advisory council"], correct: 0 },
+            { id: 223, unit: 6, q: "What does the Senate represent in the structure of Congress?", options: ["The Supreme Court's staff", "The upper chamber, with two senators from each state", "The executive branch", "The lower chamber based on city population"], correct: 1 },
+            { id: 224, unit: 6, q: "Why are checks and balances relevant to federal institutions?", options: ["They prevent any law from being passed", "They limit concentrated power among branches", "They give one branch unlimited authority", "They remove courts from government"], correct: 1 },
+            { id: 225, unit: 6, q: "What is the difference between a bill and a law?", options: ["A law is only a campaign promise", "A bill is a court and a law is a holiday", "They are always identical", "A bill is a proposal; a law is an enacted legal rule"], correct: 3 },
+            { id: 226, unit: 6, q: "What is the role of the judiciary in the federal system?", options: ["To resolve cases and interpret laws", "To organize national holidays", "To write all legislation", "To run political parties"], correct: 0 },
+            { id: 227, unit: 6, q: "What is the executive branch responsible for?", options: ["Representing states in the Senate", "Interpreting all court cases", "Carrying out and enforcing laws", "Making all constitutional amendments alone"], correct: 2 },
+            { id: 228, unit: 6, q: "What is the legislative branch responsible for?", options: ["Debating and passing legislation", "Deciding constitutional cases", "Enforcing every law directly", "Choosing all citizens' occupations"], correct: 0 },
+            { id: 229, unit: 6, q: "What is the role of political parties in elections?", options: ["They organize candidates and compete for political support", "They determine state borders", "They replace the Constitution", "They serve as the Supreme Court"], correct: 0 },
+            { id: 230, unit: 6, q: "Why are interest groups important in political life?", options: ["They automatically become federal courts", "They try to influence policies and public decisions", "They appoint every senator", "They eliminate political debate"], correct: 1 },
+            { id: 231, unit: 6, q: "What is civic participation?", options: ["Involvement in community and public affairs", "The construction of railroads", "A type of national holiday meal", "A synonym for immigration"], correct: 0 },
+            { id: 232, unit: 6, q: "What does the coursebook say about democratic participation?", options: ["Citizens, parties, and interest groups all play roles", "Participation occurs only during war", "Citizens cannot influence public life", "Only the president participates"], correct: 0 },
+            { id: 233, unit: 6, q: "What is the main function of the Electoral College?", options: ["It decides Supreme Court cases", "It approves all state constitutions", "It formally participates in choosing the President", "It makes federal statutes"], correct: 2 },
+            { id: 234, unit: 6, q: "What is the constitutional relationship among Congress, the President, and the Supreme Court?", options: ["They are one combined institution", "They exercise distinct powers within the federal system", "They all perform only judicial review", "They have no constitutional roles"], correct: 1 },
+            { id: 235, unit: 6, q: "What does a representative do in a republic?", options: ["Interprets every court case", "Acts on behalf of the people who elect them", "Rules by hereditary right", "Serves as a national symbol"], correct: 1 },
+            { id: 236, unit: 6, q: "Why is public debate important in democratic politics?", options: ["It allows different views to be expressed and considered", "It replaces the Constitution", "It removes the need for elections", "It prevents citizens from hearing alternatives"], correct: 0 },
+            { id: 237, unit: 6, q: "What is the purpose of political campaigns?", options: ["To set the Thanksgiving menu", "To ratify constitutional amendments automatically", "To appoint Supreme Court justices directly", "To communicate candidates' positions and seek voter support"], correct: 3 },
+            { id: 238, unit: 6, q: "Which branch may determine whether a law violates the Constitution in a case?", options: ["Political parties", "Legislative branch only", "Judicial branch", "Executive branch only"], correct: 2 },
+            { id: 239, unit: 6, q: "What does federal government mean in Unit 6?", options: ["A regional cultural identity", "Only city councils", "The national system of institutions established under the Constitution", "Only private organizations"], correct: 2 },
+            { id: 240, unit: 6, q: "Which of the following is a form of civic participation?", options: ["Replacing the national flag", "Avoiding all community activity", "Ignoring every public issue", "Contacting an elected representative"], correct: 3 },
+            { id: 241, unit: 6, q: "Why are elections essential to representative democracy?", options: ["They remove the need for laws", "They eliminate constitutional limits", "They provide a mechanism for choosing public officials", "They guarantee every candidate wins"], correct: 2 },
+            { id: 242, unit: 6, q: "What is one reason Congress has two chambers?", options: ["To make the Supreme Court unnecessary", "To divide the country into two regions", "The national legislature is structured as Senate and House of Representatives", "To let the President write every law"], correct: 2 },
+            { id: 243, unit: 6, q: "What is the focus of Unit 6?", options: ["National symbols and holidays", "American consumer culture", "Immigration and the salad bowl", "Federal institutions, elections, and political participation"], correct: 3 },
+            { id: 244, unit: 6, q: "What does the term 'legislative' relate to?", options: ["Interpreting laws", "Enforcing laws", "Celebrating holidays", "Making laws"], correct: 3 },
+            { id: 245, unit: 6, q: "What does the term 'executive' relate to?", options: ["Preserving regional landscapes", "Implementing and enforcing laws", "Electing senators directly", "Writing court opinions only"], correct: 1 },
+            { id: 246, unit: 6, q: "What does the term 'judicial' relate to?", options: ["Courts and the interpretation of law", "Industrial manufacturing", "Campaign fundraising only", "The national anthem"], correct: 0 },
+
+            // UNIT 7
+            { id: 247, unit: 7, q: "Which value is associated with individualism?", options: ["Emphasizing personal choice and responsibility", "Rejecting personal initiative", "Giving all decisions to the state", "Requiring everyone to have identical goals"], correct: 0 },
+            { id: 248, unit: 7, q: "What is self-reliance?", options: ["Depending only on inherited status", "Rejecting all work", "Avoiding responsibility", "Depending on one's own abilities and efforts"], correct: 3 },
+            { id: 249, unit: 7, q: "What does equality of opportunity mean?", options: ["People should have a fair chance to pursue success", "All jobs must have the same duties", "Only wealthy people should have access", "Everyone must achieve identical outcomes"], correct: 0 },
+            { id: 250, unit: 7, q: "What is achievement in the context of American values?", options: ["Accomplishing goals through effort and ability", "Avoiding challenges", "Maintaining hereditary rank", "Rejecting education"], correct: 0 },
+            { id: 251, unit: 7, q: "How is competition viewed in the unit's discussion of success?", options: ["It replaces all individual effort", "It is unrelated to work", "It always eliminates innovation", "It can motivate people to improve and achieve"], correct: 3 },
+            { id: 252, unit: 7, q: "What is the American Dream?", options: ["A guarantee that everyone becomes wealthy", "The belief that people can improve their lives through effort and opportunity", "A constitutional branch", "A national holiday in November"], correct: 1 },
+            { id: 253, unit: 7, q: "What is one common route to upward mobility discussed in the coursebook?", options: ["Education and hard work", "Rejecting all opportunities", "Depending only on ancestry", "Avoiding employment"], correct: 0 },
+            { id: 254, unit: 7, q: "What is a limitation of the American Dream?", options: ["It is legally guaranteed to produce wealth", "It never involves economic opportunity", "It rejects personal freedom", "Unequal access to opportunity can restrict mobility"], correct: 3 },
+            { id: 255, unit: 7, q: "What does volunteerism mean?", options: ["Giving time or effort to help others without expecting regular payment", "Moving permanently to another country", "Electing a representative", "Buying goods for personal use"], correct: 0 },
+            { id: 256, unit: 7, q: "What does consumer culture emphasize?", options: ["Only public ceremonies", "The division of government power", "The rejection of all products", "The purchase and use of goods and services in everyday life"], correct: 3 },
+            { id: 257, unit: 7, q: "How can work and career relate to American values?", options: ["They are often connected with achievement and personal progress", "They are unrelated to identity", "They are always inherited", "They are prohibited by individualism"], correct: 0 },
+            { id: 258, unit: 7, q: "What does mobility mean in the lifestyles unit?", options: ["A national anthem", "Movement between places or social/economic positions, depending on context", "A constitutional court", "A public holiday"], correct: 1 },
+            { id: 259, unit: 7, q: "What is one feature of everyday American lifestyles explored in Unit 7?", options: ["Work, mobility, volunteerism, and consumer culture", "Only colonial battles", "Only constitutional amendments", "Only immigration laws"], correct: 0 },
+            { id: 260, unit: 7, q: "Why is individualism an important theme in American culture?", options: ["It means no one can join communities", "It emphasizes the individual and personal responsibility", "It requires people to abandon all goals", "It prohibits personal choice"], correct: 1 },
+            { id: 261, unit: 7, q: "How does self-reliance relate to the American Dream?", options: ["Success is believed to require no effort", "It rejects individual determination", "It means opportunity is always equal in practice", "People are encouraged to work toward improving their lives"], correct: 3 },
+            { id: 262, unit: 7, q: "What is the difference between equality of opportunity and equality of outcome?", options: ["Outcome means everyone has identical backgrounds", "They mean exactly the same thing", "Opportunity concerns fair chances; outcome concerns results", "Opportunity means no one may compete"], correct: 2 },
+            { id: 263, unit: 7, q: "Why can competition be culturally significant?", options: ["It prevents all personal development", "It replaces democratic government", "It can shape ideas about achievement and success", "It has no relationship to work"], correct: 2 },
+            { id: 264, unit: 7, q: "What might critics of consumer culture argue?", options: ["Consumption can become overly central to people's lives", "Goods and services never affect daily life", "Buying products is the only constitutional right", "Consumer culture is a regional landscape"], correct: 0 },
+            { id: 265, unit: 7, q: "What is one social benefit of volunteerism?", options: ["It prevents people from cooperating", "It supports communities and helps others", "It guarantees political office", "It removes all economic inequality"], correct: 1 },
+            { id: 266, unit: 7, q: "How are American values best understood in the coursebook?", options: ["As influential ideals that people may debate and interpret differently", "As values unrelated to history", "As rules followed identically by every person", "As laws that never change"], correct: 0 },
+            { id: 267, unit: 7, q: "What does personal responsibility mean?", options: ["Expecting others to make every decision", "Rejecting all work", "Avoiding consequences", "Accepting responsibility for one's choices and actions"], correct: 3 },
+            { id: 268, unit: 7, q: "What is a common theme linking individualism and self-reliance?", options: ["Personal initiative", "Regional climate", "Hereditary monarchy", "Judicial review"], correct: 0 },
+            { id: 269, unit: 7, q: "How can education contribute to the American Dream?", options: ["It prevents social mobility", "It guarantees equal wealth for all", "It may provide skills and opportunities for advancement", "It eliminates the need for work"], correct: 2 },
+            { id: 270, unit: 7, q: "What is social mobility?", options: ["A national holiday", "Movement between social or economic levels", "The number of stars on a flag", "A process of constitutional ratification"], correct: 1 },
+            { id: 271, unit: 7, q: "What is geographic mobility?", options: ["Changing the Constitution", "Joining a political party only", "A form of judicial review", "Moving from one place to another"], correct: 3 },
+            { id: 272, unit: 7, q: "Why might people move for work or career opportunities?", options: ["To avoid every form of social interaction", "To pursue better employment or living conditions", "To change the national anthem", "To end all cultural diversity"], correct: 1 },
+            { id: 273, unit: 7, q: "Which theme is most closely connected to volunteerism?", options: ["Community service", "Judicial veto", "Hereditary rule", "Industrial colonization"], correct: 0 },
+            { id: 274, unit: 7, q: "What is one way American lifestyles can vary?", options: ["Every region has the same economy", "No one participates in community life", "People's work, family, mobility, and consumption patterns differ", "All households have identical routines"], correct: 2 },
+            { id: 275, unit: 7, q: "Why is the American Dream debated?", options: ["It has no relation to social mobility", "It is only a historical date", "Its promise of opportunity can conflict with persistent inequality", "It forbids hard work"], correct: 2 },
+            { id: 276, unit: 7, q: "Which value emphasizes freedom to make personal choices?", options: ["Commemoration", "Individualism", "Federalism", "Ratification"], correct: 1 },
+            { id: 277, unit: 7, q: "What does achievement-oriented culture emphasize?", options: ["Avoiding goals", "Maintaining a fixed social hierarchy", "Goals, performance, and accomplishment", "Rejecting all evaluation"], correct: 2 },
+            { id: 278, unit: 7, q: "How can consumer culture shape identity?", options: ["Goods and consumption may become part of how people express preferences or status", "It defines constitutional amendments", "It has no relationship to daily life", "It eliminates all individual choice"], correct: 0 },
+            { id: 279, unit: 7, q: "What is a balanced way to interpret American values?", options: ["Assume every person lives by every ideal equally", "Ignore social inequality", "Recognize ideals while considering differences in real experiences", "Treat values as unrelated to culture"], correct: 2 },
+            { id: 280, unit: 7, q: "Which is an example of volunteerism?", options: ["Purchasing a new phone", "Moving to another state for work", "Running for office to earn a salary", "Helping at a community food bank without regular pay"], correct: 3 },
+            { id: 281, unit: 7, q: "Which topic belongs most directly to Unit 7?", options: ["Individualism, success, lifestyles, and the American Dream", "The First Thanksgiving's historical account", "The Senate's composition", "The original thirteen colonies"], correct: 0 },
+            { id: 282, unit: 7, q: "What does the phrase 'equality of opportunity' encourage?", options: ["Identical life outcomes by law", "Fair access to chances for advancement", "Limiting education to a few people", "Ending all competition"], correct: 1 },
+            { id: 283, unit: 7, q: "Why is the American Dream meaningful to many immigrants?", options: ["It promises that immigration is effortless", "It is a legal immigration form", "It represents hope for freedom, education, opportunity, and mobility", "It requires people to abandon every tradition"], correct: 2 },
+            { id: 284, unit: 7, q: "What is a potential tension in American values?", options: ["Volunteerism is the same as consumerism", "Mobility has no connection to work", "Individualism means no one has personal goals", "The ideal of equal opportunity can coexist with unequal conditions"], correct: 3 },
+            { id: 285, unit: 7, q: "What is one way people contribute to community life outside paid employment?", options: ["Avoiding public activity", "Changing constitutional amendments", "Consumer spending only", "Volunteering"], correct: 3 },
+            { id: 286, unit: 7, q: "What does the unit suggest about lifestyles?", options: ["They are the same for all Americans", "They are determined only by national holidays", "They include work, mobility, volunteerism, and consumption", "They exclude career choices"], correct: 2 },
+            { id: 287, unit: 1, q: "Which statement best describes the role of national symbols?", options: ["They connect citizens to shared historical narratives", "They exist only for decoration", "They replace civic responsibility", "They remove all disagreement about history"], correct: 0 },
+            { id: 288, unit: 1, q: "Why does Independence Day have educational significance?", options: ["It explains how the Senate is elected", "It encourages reflection on founding principles and their application", "It commemorates the 1965 immigration law", "It celebrates the end of the Civil War"], correct: 1 },
+            { id: 289, unit: 2, q: "Which phrase best describes pluralism?", options: ["Cultures remain completely isolated", "Only one group may participate in society", "All groups must abandon their traditions", "Different groups maintain identities while participating in a shared society"], correct: 3 },
+            { id: 290, unit: 2, q: "What was one reason Germans migrated to the United States in the nineteenth century?", options: ["To dedicate the Statue of Liberty", "To draft the Constitution", "To establish the Electoral College", "Economic opportunities and political freedom"], correct: 3 },
+            { id: 291, unit: 3, q: "Which statement about regional identity is most accurate?", options: ["It is determined only by national elections", "It is identical across every region", "It has no connection to place", "It develops through a region's history, culture, and environment"], correct: 3 },
+            { id: 292, unit: 3, q: "Why might a landmark become a cultural symbol?", options: ["It always marks a state border", "People associate it with a place's history and meaning", "It must be the tallest building in the country", "It replaces local traditions"], correct: 1 },
+            { id: 293, unit: 4, q: "Which event occurred before the American Revolution?", options: ["European colonization of North America", "The adoption of the Fourteenth Amendment", "The dedication of the Statue of Liberty", "The Immigration and Nationality Act of 1965"], correct: 0 },
+            { id: 294, unit: 4, q: "What does the coursebook identify as a long-term effect of industrialization?", options: ["The end of urban growth", "The elimination of all regional economies", "The end of international influence", "Changes in manufacturing, transportation, and modern life"], correct: 3 },
+            { id: 295, unit: 5, q: "Which principle is intended to stop one branch from dominating government?", options: ["Checks and balances", "Assimilation", "Consumer culture", "Urbanization"], correct: 0 },
+            { id: 296, unit: 5, q: "What is the relationship between the Constitution and amendments?", options: ["Amendments formally change or add to the constitutional text", "Amendments are national holidays", "The Constitution cannot be amended", "Amendments replace the Constitution every year"], correct: 0 },
+            { id: 297, unit: 6, q: "What does Congress do when considering a proposed bill?", options: ["It decides the case as a court", "It chooses the national anthem", "It enforces the law as the executive", "It debates and considers the proposal through legislative procedures"], correct: 3 },
+            { id: 298, unit: 6, q: "Which institution is associated with the case Marbury v. Madison (1803)?", options: ["The House of Representatives only", "The Supreme Court and judicial review", "The President's Cabinet", "The Electoral College"], correct: 1 },
+            { id: 299, unit: 7, q: "Which situation best illustrates self-reliance?", options: ["A person expects others to make every choice", "A person takes initiative to learn skills and solve a problem", "A person rejects every opportunity", "A person avoids all responsibility"], correct: 1 },
+            { id: 300, unit: 7, q: "Which statement best captures the unit's view of success?", options: ["Success is unrelated to effort", "Success depends only on family ancestry", "Success is valued, but access to opportunity may differ", "Success is guaranteed to everyone"], correct: 2 }
+        ];
+
+        const unitTitles = {
+            1: "Unit 1 — Symbols and Holidays",
+            2: "Unit 2 — Identity, Diversity, and Immigration",
+            3: "Unit 3 — Geography, Regions, and Place",
+            4: "Unit 4 — History of the United States",
+            5: "Unit 5 — The Constitution: Rights and Government",
+            6: "Unit 6 — Federal Government, Elections, and Participation",
+            7: "Unit 7 — American Values, Lifestyles, and the American Dream"
+        };
+
+        // State Variables
+        let activeQuestions = [...rawData];
+        let currentIndex = 0;
+        let userAnswers = {};
+        let currentFilter = 'all';
+        let isShuffle = false;
+
+        function initApp() {
+            applyFilterAndMode();
+            setupSelectionTextLookup();
+        }
+
+        function applyFilterAndMode() {
+            if (currentFilter.startsWith('unit')) {
+                const uNum = parseInt(currentFilter.replace('unit', ''));
+                activeQuestions = rawData.filter(q => q.unit === uNum);
+            } else {
+                activeQuestions = [...rawData];
+            }
+
+            if (isShuffle) {
+                activeQuestions = [...activeQuestions].sort(() => Math.random() - 0.5);
+            }
+
+            currentIndex = 0;
+            userAnswers = {};
+            document.getElementById('total-active-questions').innerText = activeQuestions.length;
+            
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('quiz-view').classList.remove('hidden');
+            document.getElementById('nav-controls').classList.remove('hidden');
+
+            renderQuestion();
+            buildGrid();
+            updateScoreDisplay();
+        }
+
+        function setFilterMode(mode) {
+            currentFilter = mode;
+            ['all', 'unit1', 'unit2', 'unit3', 'unit4', 'unit5', 'unit6', 'unit7'].forEach(m => {
+                const btn = document.getElementById(`btn-mode-${m}`);
+                if (btn) {
+                    if (m === mode) {
+                        btn.className = "px-2.5 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow-sm transition shrink-0";
+                    } else {
+                        btn.className = "px-2.5 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition shrink-0";
+                    }
+                }
+            });
+            applyFilterAndMode();
+        }
+
+        function toggleShuffle() {
+            isShuffle = document.getElementById('toggle-shuffle').checked;
+            applyFilterAndMode();
+        }
+
+        function resetCurrentQuiz() {
+            userAnswers = {};
+            currentIndex = 0;
+            if (isShuffle) {
+                activeQuestions = [...activeQuestions].sort(() => Math.random() - 0.5);
+            }
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('quiz-view').classList.remove('hidden');
+            document.getElementById('nav-controls').classList.remove('hidden');
+            renderQuestion();
+            buildGrid();
+            updateScoreDisplay();
+        }
+
+        function renderQuestion() {
+            if (activeQuestions.length === 0) return;
+
+            const data = activeQuestions[currentIndex];
+            const isAnswered = userAnswers[data.id] !== undefined;
+            const chosenIndex = userAnswers[data.id];
+
+            // Progress Header
+            document.getElementById('progress-text').innerText = `Câu ${currentIndex + 1} / ${activeQuestions.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / activeQuestions.length) * 100}%`;
+            
+            // Unit Badge
+            const badgeEl = document.getElementById('unit-badge');
+            badgeEl.innerText = unitTitles[data.unit] || `Unit ${data.unit}`;
+
+            // Question Text
+            document.getElementById('question-text').innerText = `Câu ${data.id}. ${data.q}`;
+
+            // Render Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            data.options.forEach((optText, optIdx) => {
+                const btn = document.createElement('button');
+                btn.disabled = isAnswered;
+                btn.onclick = () => selectOption(data.id, optIdx);
+
+                let btnClasses = "w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between text-sm sm:text-base ";
+
+                if (!isAnswered) {
+                    btnClasses += "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-indigo-300";
+                } else {
+                    if (optIdx === chosenIndex) {
+                        if (optIdx === data.correct) {
+                            // Selected & Correct -> Green
+                            btnClasses += "bg-emerald-100 border-emerald-500 text-emerald-950 font-semibold shadow-sm";
+                        } else {
+                            // Selected & Incorrect -> Yellow
+                            btnClasses += "bg-amber-100 border-amber-500 text-amber-950 font-semibold shadow-sm";
+                        }
+                    } else if (optIdx === data.correct) {
+                        // Correct option when wrong choice was made -> Soft Green
+                        btnClasses += "bg-emerald-50 border-emerald-400 text-emerald-900 font-medium";
+                    } else {
+                        // Unselected options -> Faded
+                        btnClasses += "bg-slate-50 border-slate-100 text-slate-400 opacity-50";
+                    }
+                }
+
+                btn.className = btnClasses;
+                btn.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <span class="font-bold text-xs sm:text-sm px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 shrink-0">${String.fromCharCode(65 + optIdx)}</span>
+                        <span>${optText}</span>
+                    </div>
+                `;
+                container.appendChild(btn);
+            });
+
+            // Feedback Box
+            const feedbackEl = document.getElementById('feedback-container');
+            if (isAnswered) {
+                const isCorrect = chosenIndex === data.correct;
+                feedbackEl.classList.remove('hidden');
+
+                if (isCorrect) {
+                    feedbackEl.className = "mt-6 p-4 sm:p-5 rounded-xl border bg-emerald-50 border-emerald-300 text-emerald-900 animate-fade-in";
+                    feedbackEl.innerHTML = `
+                        <div class="flex items-center gap-2 font-bold text-emerald-800 text-base mb-1">
+                            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                            Chính xác! 🎉
+                        </div>
+                        <p class="text-xs sm:text-sm text-emerald-950"><strong class="font-bold">Đáp án đúng:</strong> ${String.fromCharCode(65 + data.correct)}. ${data.options[data.correct]}</p>
+                    `;
+                } else {
+                    feedbackEl.className = "mt-6 p-4 sm:p-5 rounded-xl border bg-amber-50 border-amber-400 text-amber-950 animate-fade-in";
+                    feedbackEl.innerHTML = `
+                        <div class="flex items-center gap-2 font-bold text-amber-900 text-base mb-1">
+                            <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Chưa chính xác!
+                        </div>
+                        <p class="text-xs sm:text-sm text-amber-950"><strong class="font-bold">Đáp án đúng chính xác là:</strong> <span class="underline font-extrabold">${String.fromCharCode(65 + data.correct)}. ${data.options[data.correct]}</span></p>
+                    `;
+                }
+            } else {
+                feedbackEl.classList.add('hidden');
+            }
+
+            // Controls State
+            document.getElementById('prev-btn').disabled = currentIndex === 0;
+            document.getElementById('next-btn').innerText = currentIndex === activeQuestions.length - 1 ? 'Hoàn thành' : 'Câu tiếp →';
+
+            updateGridSelection();
+        }
+
+        function selectOption(qId, optionIdx) {
+            userAnswers[qId] = optionIdx;
+            updateScoreDisplay();
+            renderQuestion();
+            buildGrid();
+        }
+
+        function updateScoreDisplay() {
+            let correctCount = 0;
+            Object.keys(userAnswers).forEach(qId => {
+                const targetQ = rawData.find(q => q.id === parseInt(qId));
+                if (targetQ && userAnswers[qId] === targetQ.correct) {
+                    correctCount++;
+                }
+            });
+            document.getElementById('score-counter').innerText = correctCount;
+        }
+
+        function nextQuestion() {
+            if (currentIndex < activeQuestions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('nav-controls').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+
+            let correctCount = 0;
+            activeQuestions.forEach(q => {
+                if (userAnswers[q.id] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const pct = Math.round((correctCount / activeQuestions.length) * 100) || 0;
+            document.getElementById('final-score').innerText = `${correctCount} / ${activeQuestions.length}`;
+            document.getElementById('final-percentage').innerText = `${pct}% chính xác`;
+        }
+
+        /* Modal & Grid Functions */
+        function toggleGridModal() {
+            const modal = document.getElementById('grid-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function buildGrid() {
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+
+            activeQuestions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => {
+                    currentIndex = idx;
+                    renderQuestion();
+                    toggleGridModal();
+                };
+
+                let gridStyle = "h-9 text-xs font-bold rounded-lg border flex items-center justify-center transition ";
+                
+                if (userAnswers[q.id] !== undefined) {
+                    if (userAnswers[q.id] === q.correct) {
+                        gridStyle += "bg-emerald-500 border-emerald-600 text-white";
+                    } else {
+                        gridStyle += "bg-amber-400 border-amber-500 text-slate-900";
+                    }
+                } else {
+                    gridStyle += "bg-slate-100 border-slate-200 text-slate-700 hover:bg-indigo-50 hover:border-indigo-300";
+                }
+
+                if (idx === currentIndex) {
+                    gridStyle += " ring-2 ring-indigo-600 ring-offset-1";
+                }
+
+                btn.className = gridStyle;
+                btn.innerText = q.id;
+                btn.id = `grid-btn-${idx}`;
+                container.appendChild(btn);
+            });
+        }
+
+        function updateGridSelection() {
+            activeQuestions.forEach((_, idx) => {
+                const btn = document.getElementById(`grid-btn-${idx}`);
+                if (btn) {
+                    if (idx === currentIndex) {
+                        btn.classList.add('ring-2', 'ring-indigo-600', 'ring-offset-1');
+                    } else {
+                        btn.classList.remove('ring-2', 'ring-indigo-600', 'ring-offset-1');
+                    }
+                }
+            });
+        }
+
+        function filterQuestions() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            activeQuestions.forEach((q, idx) => {
+                const btn = document.getElementById(`grid-btn-${idx}`);
+                if (btn) {
+                    const matchesIndex = q.id.toString().includes(query);
+                    const matchesText = q.q.toLowerCase().includes(query);
+                    if (matchesIndex || matchesText) {
+                        btn.style.display = 'flex';
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        /* Dictionary & Live Search Integration */
+        function toggleDictSidebar() {
+            const sidebar = document.getElementById('dict-sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        async function searchWord(e) {
+            if (e) e.preventDefault();
+            const input = document.getElementById('dict-input');
+            const word = input.value.trim().toLowerCase();
+            const resultEl = document.getElementById('dict-result');
+
+            if (!word) return;
+
+            document.getElementById('dict-sidebar').classList.remove('hidden');
+
+            resultEl.innerHTML = `<div class="text-center py-6 text-slate-400">Đang tìm từ <strong>"${word}"</strong>...</div>`;
+
+            try {
+                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+                if (!response.ok) throw new Error("Not found");
+                const data = await response.json();
+                
+                const entry = data[0];
+                let audioUrl = '';
+                if (entry.phonetics) {
+                    const audioObj = entry.phonetics.find(p => p.audio && p.audio.length > 0);
+                    if (audioObj) audioUrl = audioObj.audio;
+                }
+
+                let meaningsHtml = '';
+                entry.meanings.forEach(m => {
+                    meaningsHtml += `
+                        <div class="mb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${m.partOfSpeech}</span>
+                            <ul class="list-disc list-inside mt-1.5 space-y-1 text-slate-700">
+                                ${m.definitions.slice(0, 2).map(d => `<li>${d.definition}${d.example ? `<br><span class="text-slate-400 italic text-xs ml-4">"${d.example}"</span>` : ''}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                });
+
+                resultEl.innerHTML = `
+                    <div class="animate-fade-in">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-lg font-bold text-slate-800 capitalize">${entry.word}</h4>
+                            ${audioUrl ? `<button onclick="new Audio('${audioUrl}').play()" class="text-indigo-600 p-1 hover:bg-indigo-50 rounded-lg">🔊 Phát âm</button>` : ''}
+                        </div>
+                        ${entry.phonetic ? `<div class="text-xs text-slate-400 mb-3 font-mono">${entry.phonetic}</div>` : ''}
+                        ${meaningsHtml}
+                    </div>
+                `;
+            } catch (err) {
+                resultEl.innerHTML = `
+                    <div class="text-center py-6 text-slate-500">
+                        Không tìm thấy từ <strong>"${word}"</strong> trong từ điển API.
+                        <div class="mt-3 flex justify-center gap-2 text-xs">
+                            <button onclick="openExternalSearch('google', '${word}')" class="text-indigo-600 font-semibold underline">Tra Google</button>
+                            <button onclick="openExternalSearch('cambridge', '${word}')" class="text-indigo-600 font-semibold underline">Tra Cambridge</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function openExternalSearch(target, wordOverride) {
+            const word = wordOverride || document.getElementById('dict-input').value.trim() || "culture";
+            let url = "";
+            if (target === 'google') {
+                url = `https://www.google.com/search?q=define+${encodeURIComponent(word)}`;
+            } else if (target === 'cambridge') {
+                url = `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(word)}`;
+            } else if (target === 'merriam') {
+                url = `https://www.merriam-webster.com/dictionary/${encodeURIComponent(word)}`;
+            }
+            window.open(url, '_blank');
+        }
+
+        function setupSelectionTextLookup() {
+            document.addEventListener('mouseup', () => {
+                const selectedText = window.getSelection().toString().trim();
+                if (selectedText && selectedText.length < 30 && /^[a-zA-Z\s-]+$/.test(selectedText)) {
+                    document.getElementById('dict-input').value = selectedText;
+                    searchWord();
+                }
+            });
+        }
+
+        window.onload = function() {
+            initApp();
+        };
+    </script>
+</body>
+</html>
